@@ -21,34 +21,85 @@ a logo, and a code template. To properly utilize the template:
 4. Create a new harmony object inside the BaseUnityPlugin class
         
         Harmony harmony = new Harmony(PluginInfo.PLUGIN_GUID);
-5. Inside the Awake() class, call PatchAll()
+5. Inside the Awake() function, call PatchAll(). In Unity, the Awake function is called when an object is initialized, this code is treated as a Unity object, so any code in Awake() will be called on initialization. The PatchAll() function will patch any HarmonyPatch to the game's code. 
         
         harmony.PatchAll();
-6. After the Awake() class, paste the HarmonyPatch class
+    
+    A HarmonyPatch is essentially a way of modifying or hijacking a game's source code. There are three types of patches we will be uses to make our mods: Prefix, Postfix, and Transpiler. Each of these patches is applied to a function that is called by the game. 
+
+    For more information on harmony and how to use it, you can access harmonylib's documentation [here](https://harmony.pardeike.net/articles/intro.html).
+
+6. To start creating a patch, write the following code underneath (not inside) the Awake function:
         
-        [HarmonyPatch(typeof(PlayerControllerB), "PlayerJump")]
-        class Patch
+        [HarmonyPatch(typeof([class_name]), "[function_name]")]
+        class [Patch_Name]
         {
-            static bool Prefix(ref PlayerControllerB __instance)
+      
+        }
+        
+
+    [class_name] will be the name of the class that contains the function we want to modify, and [function_name] will be the name of the function. Make sure that the function name is a string. [Patch_Name] can be whatever name you want, but please make it descriptive of what the patch is actually doing. Inside this class will be the function which actually patches the game's code. 
+
+    ### Prefix
+
+    When the function being patched is called, a prefix will run its code before the function is ran (hence why it's called a prefix). 
+
+    Here is an example of a Prefix patch:
+
+        static bool Prefix(ref [class_name] __instance)
+        {
+            // Add patch code here
+        }
+    
+    ref [class_name] __instance gets the instance of the class which is calling this function, which can be very useful.
+
+    A prefix can also control if the function is run at all. If a prefix returns false, any prefix after it and the function itself will not be run. Make sure to return true if you want to function to run after your prefix!
+
+    For more information on prefix, see the harmonylib documentation on prefix [here](https://harmony.pardeike.net/articles/patching-prefix.html).
+
+    ### Postfix
+
+    A postfix is very similar to a prefix, except instead of running before the function it runs after the function. 
+
+    Here is an example of a Postfix patch:
+
+        static void Postfix(ref [type] __result)
+        {
+            // Add patch code here
+        }
+
+    In this case, [type] is the return type of the function which we are patching. ref [type] __result will get the result of the function which is being called before the postfix (this can also be the result of a prefix patch which skipped the function). 
+
+    For more information on prefix, see the harmonylib documentation for postfix [here](https://harmony.pardeike.net/articles/patching-postfix.html).
+
+    ### Transpiler
+
+    The tranpiler allows you to directly* modify the code of the function itself. Here is the shell a tranpiler function:
+
+        static IEnumerable<CodeInstruction> Transpiler (IEnumerable<CodeInstruction> instructions)
+        {
+            foreach (CodeInstruction instruction in instructions)
             {
-                // Add patch code here
+                // Patch code
+                yield return instruction;
             }
         }
 
-7. Now, you can start writing code!
+    I know, I know, it looks very scary, just work with me here... 
 
-To find code to edit, read through the classes in the decompiler (To find game
-files, go to Assembly-csharp -> GameNetcodeStuff). Once you find a class you would like 
-to edit, replace "PlayerJump" with the name of the class. 
+    Let's start with what the function is taking in. The instructions are essentially the list of code instructions that are being called by the function (what the function is doing). These code instructions are NOT C#, rather they are CIL (common intermediate language). CIL is the middle point between C# and the low-level assembly code which is being run by the CPU. In order to edit this code, you will need to have a basic understanding of CIL code. You can find a list of all CIL code instructions [here](https://en.wikipedia.org/wiki/List_of_CIL_instructions). 
 
-You can now write code in the location indicated. Code written here will act as though 
-it was written at the start of the method. You can change variables like so:
+    Now let us move on to what the function is actually doing...
 
-    __instance.jumpvalue = 5f;
-or return false to prevent a function from being called:
+    Basically, the function is going through each of the original instructions of the function, doing (something), and then returning the instruction that is actually wanted (either the original instruction or a new one). The function returns, one at a time, the new list of instructions that the function will run. 
 
-    return false;
+     For more information on the transpiler, see the harmonylib documentation for transpiler [here](https://harmony.pardeike.net/articles/patching-transpiler.html).
+ 
+7. Now, you can start writing code! 
 
+    To find code to edit, read through the classes in the decompiler (To find game
+    files, go to Assembly-csharp -> GameNetcodeStuff)
+`
 ### Compilation
 Once you are finished writing code, type 
 
