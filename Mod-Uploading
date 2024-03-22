@@ -1,0 +1,37 @@
+1. Open the mod folder of the mod you intend to upload
+
+2. Go to the Thunderstore folder created by the mod template repositroy
+
+3. Go to icon.png and check the the dimn are 256x256, if not then replace it with the 
+    png found in the template mod repository
+
+4. Go to manifenst.json
+    - make sure the name only name only includes a-z ; A-Z ; 0-9 ; _ (no spaces)
+    - make sure the description is correct with the mod you are uploading 
+    - if this is the first upload the version should be 0.0.1
+    -versions should in incremented by the following:
+        + minor changes (mostly revisions) incrment the last digit
+        + middle digit is minor changes (usually additions not revision)
+        + first digit is is major updates and new features
+        + If you update a number all numbers to its right go back to 0
+        + For more information on versions of mods look up version number conventions 
+
+5. Make sure the website URL is the correct git repository (Not The Mods Repo) 
+    
+6. If you have made any changes you are going to want to rebuild the project so that the build files are updated
+
+7. Go to the Thunderstore website and log in with your github then press upload in the top left corner
+    - if you are not a member of the LCOS team on thunderstore contact @cjmarino1804 on discord
+
+8. Place the thunderstore.zip file (located in the post build portion of the project)
+
+9. Add LCOS as the team and Lethal Company as the category
+    - add tags that are reflective of the mod you are adding
+
+10. Make sure all mods are thoroughly tested before uploading to thunderstore
+
+11. Always contact @cjmarino1804 on discord before uploading a mod under LCOS's name for a final review before it is published
+
+12. Press the submit button, if any upload error arises double check the steps along this process. If the error is still present contact @cjmarino1804 on discord for asistance in the uploading process. 
+
+
